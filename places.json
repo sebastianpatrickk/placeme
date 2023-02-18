@@ -1,0 +1,42 @@
+[
+  {
+    "title": "Prokopské Údolí",
+    "description": "Přírodní rezervace Prokopské Údolí je místem, kde si dobijete baterky, pokud chcete utéct před ruchem velkoměsta.",
+    "image": "/images/places/p2.jpg",
+    "coords": {
+      "lat": 50.0424394,
+      "lng": 14.3695968
+    },
+    "creator": "u1"
+  },
+  {
+    "title": "Divoká Šárka",
+    "description": "Přírodní rezervace Divoká Šárka je místem, kde si dobijete baterky, pokud chcete utéct před ruchem velkoměsta.",
+    "image": "/images/places/p2.jpg",
+    "coords": {
+      "lat": 50.093305,
+      "lng": 14.3228152
+    },
+    "creator": "u1"
+  },
+  {
+    "title": "DELTA",
+    "description": "Škola",
+    "image": "/images/places/p2.jpg",
+    "coords": {
+      "lat": 50.0339032,
+      "lng": 15.790338
+    },
+    "creator": "u1"
+  },
+  {
+    "title": "Marianské Lázně",
+    "description": "Moje bydliště",
+    "image": "/images/places/p2.jpg",
+    "coords": {
+      "lat": 49.9771932,
+      "lng": 12.7064964
+    },
+    "creator": "u1"
+  }
+]
