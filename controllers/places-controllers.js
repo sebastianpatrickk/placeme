@@ -94,15 +94,6 @@ const createPlace = async (req, res, next) => {
 
   const { title, description, coords, creator } = req.body;
 
-  // const title = req.body.title;
-  const createdPlace = new Place({
-    title,
-    description,
-    coords,
-    creator,
-    image: '/images/places/p2.jpg',
-  });
-
   let user;
 
   try {
@@ -117,7 +108,14 @@ const createPlace = async (req, res, next) => {
     return next(error);
   }
 
-  // console.log(user);
+  const createdPlace = new Place({
+    title,
+    description,
+    coords,
+    creatorName: user.name,
+    creator,
+    image: '/images/places/p2.jpg',
+  });
 
   try {
     const sess = await mongoose.startSession();
