@@ -6,28 +6,11 @@ const Place = require('../models/place');
 const User = require('../models/user');
 const mongoose = require('mongoose');
 
-let DUMMY_PLACES = [
-  {
-    id: 'p1',
-    title: 'Empire State Building',
-    description: 'One of the most famous sky scrapers in the world!',
-    location: {
-      lat: 40.7484474,
-      lng: -73.9871516,
-    },
-    address: '20 W 34th St, New York, NY 10001',
-    creator: 'u1',
-  },
-];
-
 const getPlaces = async (req, res, next) => {
   const places = await Place.find();
 
   if (!places) {
-    const error = new HttpError(
-      'Could not find a place for the provided id.',
-      404
-    );
+    const error = new HttpError('Nebylo možné najít místo pro zadané ID.', 404);
     return next(error);
   }
 
@@ -35,24 +18,21 @@ const getPlaces = async (req, res, next) => {
 };
 
 const getPlaceById = async (req, res, next) => {
-  const placeId = req.params.pid; // { pid: 'p1' }
+  const placeId = req.params.pid;
 
   let place;
   try {
     place = await Place.findById(placeId);
   } catch (err) {
     const error = new HttpError(
-      'Something went wrong, could not find a place.',
+      'Něco se pokazilo, nepodařilo se najít místo.',
       500
     );
     return next(error);
   }
 
   if (!place) {
-    const error = new HttpError(
-      'Could not find a place for the provided id.',
-      404
-    );
+    const error = new HttpError('Nebylo možné najít místo pro zadané ID.', 404);
     return next(error);
   }
 
@@ -67,16 +47,14 @@ const getPlacesByUserId = async (req, res, next) => {
     places = await Place.find({ creator: userId });
   } catch (err) {
     const error = new HttpError(
-      'Fetching places failed, please try again later',
+      'Načítání míst se nezdařilo, zkuste to prosím znovu později.',
       500
     );
     return next(error);
   }
 
   if (!places || places.length === 0) {
-    return next(
-      new HttpError('Could not find places for the provided user id.', 404)
-    );
+    return next(new HttpError('Nebylo možné najít místo pro zadané ID.', 404));
   }
 
   res.json({
@@ -88,7 +66,10 @@ const createPlace = async (req, res, next) => {
   const errors = validationResult(req);
   if (!errors.isEmpty()) {
     return next(
-      new HttpError('Invalid inputs passed, please check your data.', 422)
+      new HttpError(
+        'Byly zadány neplatné údaje, zkontrolujte prosím svá data.',
+        422
+      )
     );
   }
 
@@ -99,12 +80,18 @@ const createPlace = async (req, res, next) => {
   try {
     user = await User.findById(creator);
   } catch (err) {
-    const error = new HttpError('Creating place failed, please try again', 500);
+    const error = new HttpError(
+      'Vytvoření místa se nezdařilo, zkuste to prosím znovu.',
+      500
+    );
     return next(error);
   }
 
   if (!user) {
-    const error = new HttpError('Could not find user for provided id', 404);
+    const error = new HttpError(
+      'Nebylo možné najít uživatele pro zadané ID.',
+      404
+    );
     return next(error);
   }
 
@@ -127,7 +114,7 @@ const createPlace = async (req, res, next) => {
   } catch (err) {
     console.log(err);
     const error = new HttpError(
-      'Creating place failed, please try again.',
+      'Vytvoření místa se nezdařilo, zkuste to prosím znovu.',
       500
     );
     return next(error);
@@ -139,7 +126,10 @@ const createPlace = async (req, res, next) => {
 const updatePlace = async (req, res, next) => {
   const errors = validationResult(req);
   if (!errors.isEmpty()) {
-    return new HttpError('Invalid inputs passed, please check your data.', 422);
+    return new HttpError(
+      'Byly zadány neplatné údaje, zkontrolujte prosím svá data.',
+      422
+    );
   }
 
   const { title, description } = req.body;
@@ -150,7 +140,7 @@ const updatePlace = async (req, res, next) => {
     place = await Place.findById(placeId);
   } catch (err) {
     const error = new HttpError(
-      'Something went wrong, could not update place.',
+      'Něco se pokazilo, místo nelze aktualizovat.',
       500
     );
     return next(error);
@@ -163,7 +153,7 @@ const updatePlace = async (req, res, next) => {
     await place.save();
   } catch (err) {
     const error = new HttpError(
-      'Something went wrong, could not update place.',
+      'Něco se pokazilo, místo nelze aktualizovat.',
       500
     );
     return next(error);
@@ -180,14 +170,14 @@ const deletePlace = async (req, res, next) => {
     place = await Place.findById(placeId).populate('creator');
   } catch (err) {
     const error = new HttpError(
-      'Something went wrong, could not delete place.',
+      'Něco se pokazilo, místo se nepodařilo smazat.',
       500
     );
     return next(error);
   }
 
   if (!place) {
-    const error = new HttpError('Could not find place for this id.', 404);
+    const error = new HttpError('Nepodařilo se najít místo pro toto ID.', 404);
     return next(error);
   }
 
@@ -200,13 +190,13 @@ const deletePlace = async (req, res, next) => {
     await sess.commitTransaction();
   } catch (err) {
     const error = new HttpError(
-      'Something went wrong, could not delete place.',
+      'Něco se pokazilo, místo se nepodařilo smazat.',
       500
     );
     return next(error);
   }
 
-  res.status(200).json({ message: 'Deleted place.' });
+  res.status(200).json({ message: 'Smazané místo.' });
 };
 
 exports.getPlaces = getPlaces;

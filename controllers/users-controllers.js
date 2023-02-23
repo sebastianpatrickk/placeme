@@ -3,26 +3,25 @@ const { validationResult } = require('express-validator');
 const HttpError = require('../models/http-error');
 const User = require('../models/user');
 
-const DUMMY_USERS = [
-  {
-    id: 'u1',
-    name: 'Max Schwarz',
-    email: 'test@test.com',
-    password: 'testers',
-  },
-];
-
 const getUsers = async (req, res, next) => {
   let users;
   try {
     users = await User.find({}, '-password -email');
   } catch (err) {
     const error = new HttpError(
-      'Fetching users failed, please try again later.',
+      'Načítání uživatelů se nezdařilo, zkuste to prosím znovu později.',
       500
     );
     return next(error);
   }
+
+  if (!users) {
+    const error = new HttpError(
+      'Načítání uživatelů se nezdařilo, zkuste to prosím znovu později.',
+      200
+    );
+  }
+
   res.json({ users: users.map((user) => user.toObject({ getters: true })) });
 };
 
@@ -30,7 +29,10 @@ const signup = async (req, res, next) => {
   const errors = validationResult(req);
   if (!errors.isEmpty()) {
     return next(
-      new HttpError('Invalid inputs passed, please check your data.', 422)
+      new HttpError(
+        'Byly zadány neplatné údaje, zkontrolujte prosím svá data.',
+        422
+      )
     );
   }
   const { name, email, password } = req.body;
@@ -40,7 +42,7 @@ const signup = async (req, res, next) => {
     existingUser = await User.findOne({ email: email });
   } catch (err) {
     const error = new HttpError(
-      'Signing up failed, please try again later.',
+      'Registrace se nezdařila, zkuste to prosím znovu později.',
       500
     );
     return next(error);
@@ -48,7 +50,7 @@ const signup = async (req, res, next) => {
 
   if (existingUser) {
     const error = new HttpError(
-      'User exists already, please login instead.',
+      'Uživatel již existuje, přihlaste se místo něj.',
       422
     );
     return next(error);
@@ -57,7 +59,7 @@ const signup = async (req, res, next) => {
   const createdUser = new User({
     name,
     email,
-    image: 'https://live.staticflickr.com/7631/26849088292_36fc52ee90_b.jpg',
+    image: '/images/users/u2.png',
     password,
     places: [],
   });
@@ -65,7 +67,10 @@ const signup = async (req, res, next) => {
   try {
     await createdUser.save();
   } catch (err) {
-    const error = new HttpError('Signing up failed, please try again.', 500);
+    const error = new HttpError(
+      'Registrace se nezdařila, zkuste to prosím znovu.',
+      500
+    );
     return next(error);
   }
 
@@ -81,7 +86,7 @@ const login = async (req, res, next) => {
     existingUser = await User.findOne({ email: email });
   } catch (err) {
     const error = new HttpError(
-      'Logging in failed, please try again later.',
+      'Přihlášení se nezdařilo, zkuste to prosím znovu později.',
       500
     );
     return next(error);
@@ -89,13 +94,13 @@ const login = async (req, res, next) => {
 
   if (!existingUser || existingUser.password !== password) {
     const error = new HttpError(
-      'Invalid credentials, could not log you in.',
+      'Neplatné přihlašovací údaje, nelze vás přihlásit.',
       401
     );
     return next(error);
   }
 
-  res.json({ message: 'Logged in!' });
+  res.json({ message: 'Přihlášen!' });
 };
 
 exports.getUsers = getUsers;
