@@ -1,4 +1,6 @@
 const { validationResult } = require('express-validator');
+const bcrypt = require('bcryptjs');
+const jwt = require('jsonwebtoken');
 
 const HttpError = require('../models/http-error');
 const User = require('../models/user');
@@ -6,7 +8,7 @@ const User = require('../models/user');
 const getUsers = async (req, res, next) => {
   let users;
   try {
-    users = await User.find({}, '-password -email');
+    users = await User.find({}, '-password -email').sort({ createdAt: 'desc' });
   } catch (err) {
     const error = new HttpError(
       'Načítání uživatelů se nezdařilo, zkuste to prosím znovu později.',
@@ -56,11 +58,27 @@ const signup = async (req, res, next) => {
     return next(error);
   }
 
+  if (!req.file) {
+    const error = new HttpError('Profilový obrázek nebyl nalezen.', 404);
+    return next(error);
+  }
+
+  let hashedPassword;
+  try {
+    hashedPassword = await bcrypt.hash(password, 12);
+  } catch (err) {
+    const error = new HttpError(
+      'Registrace se nezdařila, zkuste to prosím znovu',
+      500
+    );
+    return next(error);
+  }
+
   const createdUser = new User({
     name,
     email,
-    image: '/images/users/u2.png',
-    password,
+    image: req.file.path.replace(/\\/g, '/'),
+    password: hashedPassword,
     places: [],
   });
 
@@ -74,7 +92,23 @@ const signup = async (req, res, next) => {
     return next(error);
   }
 
-  res.status(201).json({ user: createdUser.toObject({ getters: true }) });
+  let token;
+
+  try {
+    token = jwt.sign(
+      { id: createdUser.id, email: createdUser.email },
+      '3KjTfTlnvG2KIOCL8h18ZUHd6NfKzgOJeFeB+vH6/7o',
+      { expiresIn: '1h' }
+    );
+  } catch (err) {
+    const error = new HttpError(
+      'Registrace se nezdařila, zkuste to prosím znovu.',
+      500
+    );
+    return next(error);
+  }
+
+  res.status(201).json({ id: createdUser.id, email: createdUser.email, token });
 };
 
 const login = async (req, res, next) => {
@@ -92,7 +126,7 @@ const login = async (req, res, next) => {
     return next(error);
   }
 
-  if (!existingUser || existingUser.password !== password) {
+  if (!existingUser) {
     const error = new HttpError(
       'Neplatné přihlašovací údaje, nelze vás přihlásit.',
       401
@@ -100,7 +134,49 @@ const login = async (req, res, next) => {
     return next(error);
   }
 
-  res.json({ message: 'Přihlášen!' });
+  let isValidPassword = false;
+
+  try {
+    isValidPassword = await bcrypt.compare(password, existingUser.password);
+  } catch (err) {
+    return next(
+      new HttpError(
+        'Přihlášení se nezdařilo, zkuste to prosím znovu později.',
+        500
+      )
+    );
+  }
+
+  if (!isValidPassword) {
+    const error = new HttpError(
+      'Neplatné přihlašovací údaje, nelze vás přihlásit.',
+      401
+    );
+    return next(error);
+  }
+
+  res.status(201).json({ id: existingUser.id, email: existingUser.email });
+
+  // -- TESTING AFTER TESTING DONE UNCOMMENT -- IMPORTANT NO DELETE
+  // let token;
+
+  // try {
+  //   token = jwt.sign(
+  //     { id: existingUser.id, email: existingUser.email },
+  //     '3KjTfTlnvG2KIOCL8h18ZUHd6NfKzgOJeFeB+vH6/7o',
+  //     { expiresIn: '1h' }
+  //   );
+  // } catch (err) {
+  //   const error = new HttpError(
+  //     'Neplatné přihlašovací údaje, nelze vás přihlásit.',
+  //     500
+  //   );
+  //   return next(error);
+  // }
+
+  // res
+  //   .status(201)
+  //   .json({ id: existingUser.id, email: existingUser.email, token });
 };
 
 exports.getUsers = getUsers;

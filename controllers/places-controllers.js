@@ -1,4 +1,5 @@
 const uuid = require('uuid');
+const fs = require('fs');
 const { validationResult } = require('express-validator');
 
 const HttpError = require('../models/http-error');
@@ -7,7 +8,13 @@ const User = require('../models/user');
 const mongoose = require('mongoose');
 
 const getPlaces = async (req, res, next) => {
-  const places = await Place.find();
+  let places;
+  try {
+    places = await Place.find().sort({ createdAt: 'desc' });
+  } catch (err) {
+    const error = new HttpError('Něco se pokazilo.', 500);
+    return next(error);
+  }
 
   if (!places) {
     const error = new HttpError('Nebylo možné najít místo pro zadané ID.', 404);
@@ -44,7 +51,7 @@ const getPlacesByUserId = async (req, res, next) => {
 
   let places;
   try {
-    places = await Place.find({ creator: userId });
+    places = await Place.find({ creator: userId }).sort({ createdAt: 'desc' });
   } catch (err) {
     const error = new HttpError(
       'Načítání míst se nezdařilo, zkuste to prosím znovu později.',
@@ -73,8 +80,8 @@ const createPlace = async (req, res, next) => {
     );
   }
 
-  const { title, description, coords, creator } = req.body;
-
+  const { title, description, lat, lng, creator } = req.body;
+  const coords = { lat, lng };
   let user;
 
   try {
@@ -101,7 +108,7 @@ const createPlace = async (req, res, next) => {
     coords,
     creatorName: user.name,
     creator,
-    image: '/images/places/p2.jpg',
+    image: `${req.file.path.replace(/\\/g, '/')}`,
   });
 
   try {
@@ -120,7 +127,7 @@ const createPlace = async (req, res, next) => {
     return next(error);
   }
 
-  res.status(201).json({ place: createdPlace });
+  res.status(201).json({ place: createdPlace.toObject({ getters: true }) });
 };
 
 const updatePlace = async (req, res, next) => {
@@ -132,7 +139,8 @@ const updatePlace = async (req, res, next) => {
     );
   }
 
-  const { title, description } = req.body;
+  const { title, description, lat, lng } = req.body;
+  const coords = { lat, lng };
   const placeId = req.params.pid;
 
   let place;
@@ -148,6 +156,7 @@ const updatePlace = async (req, res, next) => {
 
   place.title = title;
   place.description = description;
+  place.coords = coords;
 
   try {
     await place.save();
@@ -170,16 +179,18 @@ const deletePlace = async (req, res, next) => {
     place = await Place.findById(placeId).populate('creator');
   } catch (err) {
     const error = new HttpError(
-      'Něco se pokazilo, místo se nepodařilo smazat.',
+      'Something went wrong, could not delete place.',
       500
     );
     return next(error);
   }
 
   if (!place) {
-    const error = new HttpError('Nepodařilo se najít místo pro toto ID.', 404);
+    const error = new HttpError('Could not find place for this id.', 404);
     return next(error);
   }
+
+  const imagePath = place.image;
 
   try {
     const sess = await mongoose.startSession();
@@ -190,11 +201,16 @@ const deletePlace = async (req, res, next) => {
     await sess.commitTransaction();
   } catch (err) {
     const error = new HttpError(
-      'Něco se pokazilo, místo se nepodařilo smazat.',
+      'Something went wrong, could not delete place.',
       500
     );
     return next(error);
   }
+  console.log(place.image);
+
+  fs.unlink(imagePath, (err) => {
+    console.log(err);
+  });
 
   res.status(200).json({ message: 'Smazané místo.' });
 };
