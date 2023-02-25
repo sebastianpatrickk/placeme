@@ -2,6 +2,7 @@ const HttpError = require('../models/http-error');
 const jwt = require('jsonwebtoken');
 
 module.exports = (req, res, next) => {
+  if (req.method === 'OPTIONS') next();
   try {
     const token = req.headers.authorization.split(' ')[1];
 
@@ -14,7 +15,7 @@ module.exports = (req, res, next) => {
       '3KjTfTlnvG2KIOCL8h18ZUHd6NfKzgOJeFeB+vH6/7o'
     );
 
-    req.userData = { id: decToken.id };
+    req.userData = { userId: decToken.id };
     next();
   } catch (err) {
     return next(new HttpError('Ověřování selhalo!', 401));

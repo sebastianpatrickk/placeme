@@ -43,7 +43,7 @@ const getPlaceById = async (req, res, next) => {
     return next(error);
   }
 
-  res.status(200).json({ place: place.toObject({ getters: true }) }); // => { place } => { place: place }
+  res.status(200).json({ place: place.toObject({ getters: true }) });
 };
 
 const getPlacesByUserId = async (req, res, next) => {
@@ -80,12 +80,13 @@ const createPlace = async (req, res, next) => {
     );
   }
 
-  const { title, description, lat, lng, creator } = req.body;
+  const { title, description, lat, lng } = req.body;
+  const { userId } = req.userData;
   const coords = { lat, lng };
   let user;
 
   try {
-    user = await User.findById(creator);
+    user = await User.findById(userId);
   } catch (err) {
     const error = new HttpError(
       'Vytvoření místa se nezdařilo, zkuste to prosím znovu.',
@@ -107,7 +108,7 @@ const createPlace = async (req, res, next) => {
     description,
     coords,
     creatorName: user.name,
-    creator,
+    creator: userId,
     image: `${req.file.path.replace(/\\/g, '/')}`,
   });
 
@@ -168,6 +169,13 @@ const updatePlace = async (req, res, next) => {
     return next(error);
   }
 
+  console.log(place.creator.toString() !== req.userData.userId);
+
+  if (place.creator.toString() !== req.userData.userId) {
+    const error = new HttpError('Tento příspěvek nemůžeš upravovat.', 401);
+    return next(error);
+  }
+  console.log(place);
   res.status(200).json({ place: place.toObject({ getters: true }) });
 };
 
@@ -179,17 +187,21 @@ const deletePlace = async (req, res, next) => {
     place = await Place.findById(placeId).populate('creator');
   } catch (err) {
     const error = new HttpError(
-      'Something went wrong, could not delete place.',
+      'Něco se pokazilo, místo se nepodařilo smazat.',
       500
     );
     return next(error);
   }
 
   if (!place) {
-    const error = new HttpError('Could not find place for this id.', 404);
+    const error = new HttpError('Nebylo možné najít místo pro zadané ID.', 404);
     return next(error);
   }
 
+  if (place.creator.id !== req.userData.userId) {
+    const error = new HttpError('Tento příspěvek nemůžeš odstranit.', 401);
+    return next(error);
+  }
   const imagePath = place.image;
 
   try {
@@ -201,18 +213,17 @@ const deletePlace = async (req, res, next) => {
     await sess.commitTransaction();
   } catch (err) {
     const error = new HttpError(
-      'Something went wrong, could not delete place.',
+      'Něco se pokazilo, místo se nepodařilo smazat.',
       500
     );
     return next(error);
   }
-  console.log(place.image);
 
   fs.unlink(imagePath, (err) => {
     console.log(err);
   });
 
-  res.status(200).json({ message: 'Smazané místo.' });
+  res.status(200).json({ message: 'Místo bylo odstraněno' });
 };
 
 exports.getPlaces = getPlaces;

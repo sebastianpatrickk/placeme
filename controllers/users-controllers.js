@@ -155,28 +155,28 @@ const login = async (req, res, next) => {
     return next(error);
   }
 
-  res.status(201).json({ id: existingUser.id, email: existingUser.email });
+  // res.status(201).json({ id: existingUser.id, email: existingUser.email });
 
   // -- TESTING AFTER TESTING DONE UNCOMMENT -- IMPORTANT NO DELETE
-  // let token;
+  let token;
 
-  // try {
-  //   token = jwt.sign(
-  //     { id: existingUser.id, email: existingUser.email },
-  //     '3KjTfTlnvG2KIOCL8h18ZUHd6NfKzgOJeFeB+vH6/7o',
-  //     { expiresIn: '1h' }
-  //   );
-  // } catch (err) {
-  //   const error = new HttpError(
-  //     'Neplatné přihlašovací údaje, nelze vás přihlásit.',
-  //     500
-  //   );
-  //   return next(error);
-  // }
+  try {
+    token = jwt.sign(
+      { id: existingUser.id, email: existingUser.email },
+      '3KjTfTlnvG2KIOCL8h18ZUHd6NfKzgOJeFeB+vH6/7o',
+      { expiresIn: '1h' }
+    );
+  } catch (err) {
+    const error = new HttpError(
+      'Neplatné přihlašovací údaje, nelze vás přihlásit.',
+      500
+    );
+    return next(error);
+  }
 
-  // res
-  //   .status(201)
-  //   .json({ id: existingUser.id, email: existingUser.email, token });
+  res
+    .status(201)
+    .json({ id: existingUser.id, email: existingUser.email, token });
 };
 
 exports.getUsers = getUsers;
