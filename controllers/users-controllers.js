@@ -97,7 +97,7 @@ const signup = async (req, res, next) => {
   try {
     token = jwt.sign(
       { id: createdUser.id, email: createdUser.email },
-      '3KjTfTlnvG2KIOCL8h18ZUHd6NfKzgOJeFeB+vH6/7o',
+      process.env.JWT_SECRET,
       { expiresIn: '1h' }
     );
   } catch (err) {
@@ -155,15 +155,12 @@ const login = async (req, res, next) => {
     return next(error);
   }
 
-  // res.status(201).json({ id: existingUser.id, email: existingUser.email });
-
-  // -- TESTING AFTER TESTING DONE UNCOMMENT -- IMPORTANT NO DELETE
   let token;
 
   try {
     token = jwt.sign(
       { id: existingUser.id, email: existingUser.email },
-      '3KjTfTlnvG2KIOCL8h18ZUHd6NfKzgOJeFeB+vH6/7o',
+      process.env.JWT_SECRET,
       { expiresIn: '1h' }
     );
   } catch (err) {

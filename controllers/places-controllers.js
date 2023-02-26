@@ -1,4 +1,3 @@
-const uuid = require('uuid');
 const fs = require('fs');
 const { validationResult } = require('express-validator');
 

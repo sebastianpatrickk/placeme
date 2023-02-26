@@ -10,10 +10,7 @@ module.exports = (req, res, next) => {
       return next(new HttpError('Ověřování selhalo!', 401));
     }
 
-    const decToken = jwt.verify(
-      token,
-      '3KjTfTlnvG2KIOCL8h18ZUHd6NfKzgOJeFeB+vH6/7o'
-    );
+    const decToken = jwt.verify(token, process.env.JWT_SECRET);
 
     req.userData = { userId: decToken.id };
     next();

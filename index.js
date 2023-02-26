@@ -5,13 +5,26 @@ const express = require('express');
 const bodyParser = require('body-parser');
 const mongoose = require('mongoose');
 
+require('dotenv').config();
+
 const placesRoutes = require('./routes/places-routes');
 const usersRoutes = require('./routes/users-routes');
 const HttpError = require('./models/http-error');
+const { rateLimit } = require('express-rate-limit');
+const { default: helmet } = require('helmet');
 
 const app = express();
 
-app.use(bodyParser.json());
+app.use(bodyParser.json({ limit: '10kb' }));
+
+const limiter = rateLimit({
+  max: 100,
+  windowMs: 60 * 60 * 1000,
+  message: 'Too many requests from this IP, please try again in an hour!',
+});
+app.use('/api', limiter);
+
+app.use(helmet());
 
 app.use('/uploads/images', express.static(path.join('uploads', 'images')));
 
@@ -25,8 +38,6 @@ app.use((req, res, next) => {
 
   next();
 });
-
-// app.use('/uploads/images', express.static(path.join('uploads', 'images')));
 
 app.use('/api/places', placesRoutes);
 app.use('/api/users', usersRoutes);
@@ -49,9 +60,15 @@ app.use((error, req, res, next) => {
   res.json({ message: error.message || 'An unknown error occurred!' });
 });
 
+console.log(
+  process.env.DB_USERNAME,
+  process.env.DB_PASSWORD,
+  process.env.DB_NAME
+);
+
 mongoose
   .connect(
-    'mongodb+srv://sebastian:A0vNScvObFr53Mnn@cluster0.cb3g0gh.mongodb.net/place-me?retryWrites=true&w=majority'
+    `mongodb+srv://${process.env.DB_USERNAME}:${process.env.DB_PASSWORD}@cluster0.cb3g0gh.mongodb.net/${process.env.DB_NAME}?retryWrites=true&w=majority`
   )
   .then(() => {
     app.listen(5000);
