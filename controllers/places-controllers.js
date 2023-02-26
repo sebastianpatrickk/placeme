@@ -119,7 +119,6 @@ const createPlace = async (req, res, next) => {
     await user.save({ session: sess });
     await sess.commitTransaction();
   } catch (err) {
-    console.log(err);
     const error = new HttpError(
       'Vytvoření místa se nezdařilo, zkuste to prosím znovu.',
       500
@@ -168,13 +167,10 @@ const updatePlace = async (req, res, next) => {
     return next(error);
   }
 
-  console.log(place.creator.toString() !== req.userData.userId);
-
   if (place.creator.toString() !== req.userData.userId) {
     const error = new HttpError('Tento příspěvek nemůžeš upravovat.', 401);
     return next(error);
   }
-  console.log(place);
   res.status(200).json({ place: place.toObject({ getters: true }) });
 };
 
@@ -218,9 +214,7 @@ const deletePlace = async (req, res, next) => {
     return next(error);
   }
 
-  fs.unlink(imagePath, (err) => {
-    console.log(err);
-  });
+  fs.unlink(imagePath, (err) => {});
 
   res.status(200).json({ message: 'Místo bylo odstraněno' });
 };

@@ -49,9 +49,7 @@ app.use((req, res, next) => {
 
 app.use((error, req, res, next) => {
   if (req.file) {
-    fs.unlink(req.file.path, (err) => {
-      console.log(err);
-    });
+    fs.unlink(req.file.path, (err) => {});
   }
   if (res.headerSent) {
     return next(error);
@@ -60,12 +58,6 @@ app.use((error, req, res, next) => {
   res.json({ message: error.message || 'An unknown error occurred!' });
 });
 
-console.log(
-  process.env.DB_USERNAME,
-  process.env.DB_PASSWORD,
-  process.env.DB_NAME
-);
-
 mongoose
   .connect(
     `mongodb+srv://${process.env.DB_USERNAME}:${process.env.DB_PASSWORD}@cluster0.cb3g0gh.mongodb.net/${process.env.DB_NAME}?retryWrites=true&w=majority`
@@ -73,6 +65,4 @@ mongoose
   .then(() => {
     app.listen(5000);
   })
-  .catch((err) => {
-    console.log(err);
-  });
+  .catch((err) => {});
