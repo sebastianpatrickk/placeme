@@ -20,9 +20,11 @@ const getUsers = async (req, res, next) => {
   if (!users) {
     const error = new HttpError(
       'Načítání uživatelů se nezdařilo, zkuste to prosím znovu později.',
-      200
+      404
     );
   }
+
+  // next(new HttpError('Test error', 404));
 
   res.json({ users: users.map((user) => user.toObject({ getters: true })) });
 };
@@ -37,7 +39,7 @@ const signup = async (req, res, next) => {
       )
     );
   }
-  const { name, email, password } = req.body;
+  const { name, email, password, image } = req.body;
 
   let existingUser;
   try {
@@ -58,11 +60,6 @@ const signup = async (req, res, next) => {
     return next(error);
   }
 
-  if (!req.file) {
-    const error = new HttpError('Profilový obrázek nebyl nalezen.', 404);
-    return next(error);
-  }
-
   let hashedPassword;
   try {
     hashedPassword = await bcrypt.hash(password, 12);
@@ -77,7 +74,7 @@ const signup = async (req, res, next) => {
   const createdUser = new User({
     name,
     email,
-    image: req.file.path.replace(/\\/g, '/'),
+    image,
     password: hashedPassword,
     places: [],
   });

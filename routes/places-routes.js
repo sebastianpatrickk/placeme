@@ -17,12 +17,12 @@ router.use(auth);
 
 router.post(
   '/',
-  upload.single('image'),
   [
     check('title').not().isEmpty(),
     check('description').isLength({ min: 5 }),
     check('lat').not().isEmpty(),
     check('lng').not().isEmpty(),
+    check('image').not().isEmpty(),
   ],
   placesControllers.createPlace
 );
@@ -33,6 +33,7 @@ router.patch(
   check('description').isLength({ min: 5 }),
   check('lat').not().isEmpty(),
   check('lng').not().isEmpty(),
+  check('image').not().isEmpty(),
   placesControllers.updatePlace
 );
 

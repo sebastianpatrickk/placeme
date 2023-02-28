@@ -79,7 +79,7 @@ const createPlace = async (req, res, next) => {
     );
   }
 
-  const { title, description, lat, lng } = req.body;
+  const { title, description, lat, lng, image } = req.body;
   const { userId } = req.userData;
   const coords = { lat, lng };
   let user;
@@ -108,7 +108,7 @@ const createPlace = async (req, res, next) => {
     coords,
     creatorName: user.name,
     creator: userId,
-    image: `${req.file.path.replace(/\\/g, '/')}`,
+    image,
   });
 
   try {
