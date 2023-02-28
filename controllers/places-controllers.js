@@ -138,7 +138,7 @@ const updatePlace = async (req, res, next) => {
     );
   }
 
-  const { title, description, lat, lng } = req.body;
+  const { title, description, lat, lng, image } = req.body;
   const coords = { lat, lng };
   const placeId = req.params.pid;
 
@@ -156,6 +156,7 @@ const updatePlace = async (req, res, next) => {
   place.title = title;
   place.description = description;
   place.coords = coords;
+  place.image = image;
 
   try {
     await place.save();
