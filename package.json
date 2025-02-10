@@ -4,8 +4,8 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "start": "nodemon api/index.js",
-    "dev": "nodemon -r dotenv/config api/index.js"
+    "start": "node api/index.js",
+    "dev:api": "nodemon -r dotenv/config api/index.js"
   },
   "author": "",
   "license": "ISC",
