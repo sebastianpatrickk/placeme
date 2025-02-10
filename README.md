@@ -1,31 +1,20 @@
-![Logo](https://placeme-vite.web.app/assets/logo-548371bd.svg)
+![image](https://github.com/user-attachments/assets/552781d6-f04d-419e-a1d7-a82c64260990)
 
-# PlaceMe
 
-PlaceMe je webová aplikace, která umožňuje uživatelům sdílet místa na interaktivní mapě místo fotek jako na Instagramu. Tento projekt jsem vytvořil jako portfolio pro přijímací řízení a je open source.
+This is my first working fullstack web app built with MERN stack. I wrote this code about 2 years ago when I was building a portfolio project for my High School application. It's incredible to see how much I've learned in these 2 years. While reviewing this code, I kept thinking about how I could have written such terrible code, but on the other hand, I'm amazed that I was able to build this 2 years ago with almost no experience.
 
-## Tech:
+---
 
-V tomto projekt používám následující technologie:
+<img width="1512" alt="Screenshot 2025-02-10 at 17 53 35" src="https://github.com/user-attachments/assets/a3c12f5d-27b9-444f-8daa-07b10d59c852" />
 
-**Client:** React.js, Formik, TailwindCSS, Framer Motion, Javascript, Radix UI a Vite.
 
-**Hosting:** Frontend aplikace je hostována jako statická stránka pomocí Firebase Hosting
+PlaceMe is a web application that allows users to share places that visited on an interactive map instead of photos like on Instagram. Live demo [here](https://place-me.netlify.app/)
 
-**Server:** [Backend](https://github.com/sebastian-patrick-klen/placeme-backend.git)
+## **Tech Stack**
 
-## Demo
-
-Tento projekt je k dispozici na následující webové adrese: https://placeme-vite.web.app/. Omlouváme se za pomalejší načítání, které je způsobeno horším hostingem pro rest API.
-
-## License
-
-Tento projekt je open source a je pod [MIT](https://choosealicense.com/licenses/mit/) licencí.
-
-## Feedback
-
-Máte-li dotazy nebo připomínky, neváhejte mě kontaktovat na následující adrese: sebastianklen.business@gmail.com.
-
-## Autor
-
-- [@sebastian-patrick-klen](https://github.com/sebastian-patrick-klen)
+- **Framework:** [React](https://react.dev/)
+- **Styling:** [Tailwind CSS](https://tailwindcss.com/)
+- **UI Components:** [Radix UI](https://www.radix-ui.com/)
+- **Backend:** [Express](https://expressjs.com/)
+- **ORM:** [Mongoose](https://mongoosejs.com/)
+- **Authentication:** [JWT](https://jwt.io/)
