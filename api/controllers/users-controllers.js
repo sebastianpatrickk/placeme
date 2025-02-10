@@ -1,17 +1,17 @@
-const { validationResult } = require('express-validator');
-const bcrypt = require('bcryptjs');
-const jwt = require('jsonwebtoken');
+const { validationResult } = require("express-validator");
+const bcrypt = require("bcryptjs");
+const jwt = require("jsonwebtoken");
 
-const HttpError = require('../models/http-error');
-const User = require('../models/user');
+const HttpError = require("../models/http-error");
+const User = require("../models/user");
 
 const getUsers = async (req, res, next) => {
   let users;
   try {
-    users = await User.find({}, '-password -email').sort({ createdAt: 'desc' });
+    users = await User.find({}, "-password -email").sort({ createdAt: "desc" });
   } catch (err) {
     const error = new HttpError(
-      'Načítání uživatelů se nezdařilo, zkuste to prosím znovu později.',
+      "Načítání uživatelů se nezdařilo, zkuste to prosím znovu později.",
       500
     );
     return next(error);
@@ -19,7 +19,7 @@ const getUsers = async (req, res, next) => {
 
   if (!users) {
     const error = new HttpError(
-      'Načítání uživatelů se nezdařilo, zkuste to prosím znovu později.',
+      "Načítání uživatelů se nezdařilo, zkuste to prosím znovu později.",
       404
     );
   }
@@ -34,7 +34,7 @@ const signup = async (req, res, next) => {
   if (!errors.isEmpty()) {
     return next(
       new HttpError(
-        'Byly zadány neplatné údaje, zkontrolujte prosím svá data.',
+        "Byly zadány neplatné údaje, zkontrolujte prosím svá data.",
         422
       )
     );
@@ -46,7 +46,7 @@ const signup = async (req, res, next) => {
     existingUser = await User.findOne({ email: email });
   } catch (err) {
     const error = new HttpError(
-      'Registrace se nezdařila, zkuste to prosím znovu později.',
+      "Registrace se nezdařila, zkuste to prosím znovu později.",
       500
     );
     return next(error);
@@ -54,7 +54,7 @@ const signup = async (req, res, next) => {
 
   if (existingUser) {
     const error = new HttpError(
-      'Uživatel již existuje, přihlaste se místo něj.',
+      "Uživatel již existuje, přihlaste se místo něj.",
       422
     );
     return next(error);
@@ -65,7 +65,7 @@ const signup = async (req, res, next) => {
     hashedPassword = await bcrypt.hash(password, 12);
   } catch (err) {
     const error = new HttpError(
-      'Registrace se nezdařila, zkuste to prosím znovu',
+      "Registrace se nezdařila, zkuste to prosím znovu.",
       500
     );
     return next(error);
@@ -83,7 +83,7 @@ const signup = async (req, res, next) => {
     await createdUser.save();
   } catch (err) {
     const error = new HttpError(
-      'Registrace se nezdařila, zkuste to prosím znovu.',
+      "Registrace se nezdařila, zkuste to prosím znovu.",
       500
     );
     return next(error);
@@ -95,11 +95,11 @@ const signup = async (req, res, next) => {
     token = jwt.sign(
       { id: createdUser.id, email: createdUser.email },
       process.env.JWT_SECRET,
-      { expiresIn: '1h' }
+      { expiresIn: "1h" }
     );
   } catch (err) {
     const error = new HttpError(
-      'Registrace se nezdařila, zkuste to prosím znovu.',
+      "Registrace se nezdařila, zkuste to prosím znovu...",
       500
     );
     return next(error);
@@ -117,7 +117,7 @@ const login = async (req, res, next) => {
     existingUser = await User.findOne({ email: email });
   } catch (err) {
     const error = new HttpError(
-      'Přihlášení se nezdařilo, zkuste to prosím znovu později.',
+      "Přihlášení se nezdařilo, zkuste to prosím znovu později.",
       500
     );
     return next(error);
@@ -125,7 +125,7 @@ const login = async (req, res, next) => {
 
   if (!existingUser) {
     const error = new HttpError(
-      'Neplatné přihlašovací údaje, nelze vás přihlásit.',
+      "Neplatné přihlašovací údaje, nelze vás přihlásit.",
       401
     );
     return next(error);
@@ -138,7 +138,7 @@ const login = async (req, res, next) => {
   } catch (err) {
     return next(
       new HttpError(
-        'Přihlášení se nezdařilo, zkuste to prosím znovu později.',
+        "Přihlášení se nezdařilo, zkuste to prosím znovu později.",
         500
       )
     );
@@ -146,7 +146,7 @@ const login = async (req, res, next) => {
 
   if (!isValidPassword) {
     const error = new HttpError(
-      'Neplatné přihlašovací údaje, nelze vás přihlásit.',
+      "Neplatné přihlašovací údaje, nelze vás přihlásit.",
       401
     );
     return next(error);
@@ -158,11 +158,11 @@ const login = async (req, res, next) => {
     token = jwt.sign(
       { id: existingUser.id, email: existingUser.email },
       process.env.JWT_SECRET,
-      { expiresIn: '1h' }
+      { expiresIn: "1h" }
     );
   } catch (err) {
     const error = new HttpError(
-      'Neplatné přihlašovací údaje, nelze vás přihlásit.',
+      "Neplatné přihlašovací údaje, nelze vás přihlásit.",
       500
     );
     return next(error);
