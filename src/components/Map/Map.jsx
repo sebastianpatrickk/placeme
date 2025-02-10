@@ -1,4 +1,4 @@
-import { useContext, useEffect, useState } from 'react';
+import { useContext, useEffect, useState } from "react";
 import {
   MapContainer,
   TileLayer,
@@ -6,16 +6,11 @@ import {
   Popup,
   useMapEvents,
   useMap,
-} from 'react-leaflet';
-import PositionContext from '../../store/position-context';
-import Markers from './Markers';
+} from "react-leaflet";
+import PositionContext from "../../store/position-context";
+import Markers from "./Markers";
 
-export default function Map({
-  placesData,
-  className,
-  isEdit,
-  getPlaceLocation,
-}) {
+export default function Map({ placesData, className, isEdit }) {
   const posCtx = useContext(PositionContext);
 
   // Get coords, render place marker
@@ -39,7 +34,7 @@ export default function Map({
     const map = useMap();
 
     useEffect(() => {
-      map.locate().on('locationfound', function (e) {
+      map.locate().on("locationfound", function (e) {
         setPosition(e.latlng);
 
         if (!posCtx.position) {
@@ -69,7 +64,7 @@ export default function Map({
       doubleClickZoom={false}
       scrollWheelZoom={true}
     >
-      <TileLayer url='https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png' />
+      <TileLayer url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png" />
 
       {!isEdit && <LookAt />}
 

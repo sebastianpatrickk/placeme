@@ -1,7 +1,7 @@
-import { useContext, useEffect } from 'react';
-import { useLoaderData, useParams } from 'react-router-dom';
-import Map from '../components/Map/Map';
-import PositionContext from '../store/position-context';
+import { useContext, useEffect } from "react";
+import { useLoaderData, useParams } from "react-router-dom";
+import Map from "../components/Map/Map";
+import PositionContext from "../store/position-context";
 
 const MapPage = () => {
   const params = useParams();
@@ -18,7 +18,7 @@ const MapPage = () => {
   }, [params.id]);
 
   return (
-    <Map placesData={places} className='w-full calc-height' isEdit={false} />
+    <Map placesData={places} className="w-full calc-height" isEdit={false} />
   );
 };
 
