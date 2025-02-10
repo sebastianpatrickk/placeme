@@ -5,9 +5,7 @@ import { PositionContextProvider } from "./store/position-context";
 import { StrictMode } from "react";
 
 createRoot(document.getElementById("root")).render(
-  <StrictMode>
-    <PositionContextProvider>
-      <App />
-    </PositionContextProvider>
-  </StrictMode>
+  <PositionContextProvider>
+    <App />
+  </PositionContextProvider>
 );
