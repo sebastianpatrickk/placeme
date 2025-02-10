@@ -24,8 +24,6 @@ const getUsers = async (req, res, next) => {
     );
   }
 
-  // next(new HttpError('Test error', 404));
-
   res.json({ users: users.map((user) => user.toObject({ getters: true })) });
 };
 
