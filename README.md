@@ -5,7 +5,8 @@ This is my first working fullstack web app built with MERN stack. I wrote this c
 
 ---
 
-<img width="1512" alt="Screenshot 2025-02-10 at 17 53 35" src="https://github.com/user-attachments/assets/a3c12f5d-27b9-444f-8daa-07b10d59c852" />
+<img width="1512" alt="image" src="https://github.com/user-attachments/assets/c0267f1b-067b-4ed0-af60-6bda059589fa" />
+
 
 
 PlaceMe is a web application that allows users to share places that visited on an interactive map instead of photos like on Instagram. Live demo [here](https://place-me.netlify.app/)
